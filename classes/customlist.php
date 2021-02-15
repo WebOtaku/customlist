@@ -2,12 +2,11 @@
 
 namespace block_customlist;
 
-use http\Exception;
 use moodle_url;
 use pix_icon;
 
 class customlist {
-    public static function listitem_view($listitem, $context, $returnurl, $baseurl, $mode, $page, $perpage) {
+    public static function listitem_view($listitem, $context, $returnurl, $baseurl, $mode) {
         global $OUTPUT;
 
         $html_str = '';
@@ -28,10 +27,17 @@ class customlist {
             $html_str .= '<h4>' . $listitem->title . '</h4>';
 
         $html_str .= '<div>';
-        $description = file_rewrite_pluginfile_urls($listitem->description, 'pluginfile.php',
-            $context->id, 'block_customlist', 'listitem', $listitem->id);
-        $html_str .= '<p>'.$description.'</p>';
-        $html_str .= get_string('link', 'block_customlist').': <a href="'.$listitem->link.'">'.$listitem->link.'</a>';
+
+        if ($listitem->description) {
+            $description = file_rewrite_pluginfile_urls($listitem->description, 'pluginfile.php',
+                $context->id, 'block_customlist', 'listitem', $listitem->id);
+
+            $html_str .= '<p>' . $description . '</p>';
+        }
+
+        if ($listitem->link)
+            $html_str .= get_string('link', 'block_customlist').': <a href="'.$listitem->link.'">'.$listitem->link.'</a>';
+
         $html_str .= '<hr>';
         $html_str .= '</div>';
 
@@ -40,13 +46,14 @@ class customlist {
             $html_str .= '<div>';
 
             if ($mode === 'full') {
-                $edit_returnurl_params = array(
+                /*$edit_returnurl_params = array(
                     'mode' => 'full',
                     'page' => $page,
                     'perpage' => $perpage,
                     'returnurl' => $returnurl,
                 );
-                $edit_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $edit_returnurl_params);
+                $edit_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $edit_returnurl_params);*/
+                $edit_returnurl = $baseurl;
             }
 
             if ($mode === 'item') {
@@ -68,13 +75,14 @@ class customlist {
             $html_str .= $OUTPUT->single_button($editurl, get_string('edit', 'block_customlist'));
 
             if ($mode === 'full') {
-                $del_returnurl_params = array(
+                /*$del_returnurl_params = array(
                     'mode' => 'full',
                     'page' => $page,
                     'perpage' => $perpage,
                     'returnurl' => $returnurl
                 );
-                $del_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $del_returnurl_params);
+                $del_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $del_returnurl_params);*/
+                $del_returnurl = $baseurl;
             }
 
             if ($mode === 'item') {
@@ -110,7 +118,7 @@ class customlist {
         return $html_str;
     }
 
-    public static function fulllist_view($listitems, $context, $returnurl, $baseurl, $mode, $page, $perpage, $updowncount, $listitem_count) {
+    public static function fulllist_view($listitems, $context, $returnurl, $baseurl, $mode, $updowncount, $listitem_count) {
         global $OUTPUT, $DB;
 
         $html_str = '';
@@ -191,7 +199,7 @@ class customlist {
                 </h2>
                 <div id="collapse'. $listitem->id .'" class="cm-accordion-collapse collapse" aria-labelledby="heading'. $listitem->id .'" data-parent="#clAccordion">
                     <div class="cm-accordion-body">
-                        '. customlist::listitem_view($listitem, $context, $returnurl, $baseurl, $mode, $page, $perpage) .'
+                        '. customlist::listitem_view($listitem, $context, $returnurl, $baseurl, $mode) .'
                     </div>
                 </div>
             </div>
@@ -240,7 +248,8 @@ class customlist {
                     }
                 }
             }
-        } else print_error('nosuchaction', 'block_customlist');
+        }
+        else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
 
         return $instances;
     }
@@ -267,6 +276,9 @@ class customlist {
                     $DB->update_record('block_customlist', $instance);
                 }
             }
-        } else print_error('nosuchaction', 'block_customlist');
+        }
+        else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
+
+        return $instances;
     }
 }

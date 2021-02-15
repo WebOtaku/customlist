@@ -21,7 +21,7 @@ if (!has_capability('block/customlist:addinstance', $context)) {
 
 $PAGE->set_context($context);
 
-if ($action === 'delete' && confirm_sesskey() && $id)
+if ($action === 'delete' && confirm_sesskey())
 {
     if ($DB->record_exists('block_customlist', array('id' => $id)))
     {
@@ -40,7 +40,7 @@ if ($action === 'delete' && confirm_sesskey() && $id)
 $pageurl = '/blocks/customlist/edit_listitem_view.php';
 $pageparams = array();
 
-if ($action === 'edit' && $id)
+if ($action === 'edit')
     $pageparams['id'] = $id;
 
 $pageparams['action'] = $action;
@@ -95,9 +95,9 @@ if ($action === 'add') {
 $listitem = new stdClass();
 $listitem->id = null;
 
-if ($action === 'edit' && $id) {
+if ($action === 'edit') {
     if (!$listitem = $DB->get_record('block_customlist', array('id' => $id))) {
-        print_error('invalidentry');
+        redirect($returnurl);
     }
 }
 
@@ -122,9 +122,19 @@ if($edit_listitem_form->is_cancelled()) {
 } else if ($listitem = $edit_listitem_form->get_data()) {
     require_capability('block/customlist:addinstance', $context);
 
-    if ($action === 'edit' && $listitem->id) {
+    if ($action === 'edit') {
         $listitem = file_postupdate_standard_editor($listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $listitem->id);
         $listitem->timemodified = time();
+
+        /*$maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
+        if ($listitem->sortorder < 0) $listitem->sortorder = 0;
+        if ($listitem->sortorder > $maxsortorder) $listitem->sortorder = $maxsortorder + 1;
+
+        if ($prev_listitem = $DB->get_record('block_customlist', array('sortorder' => $listitem->sortorder)))
+        {
+            $instances = $DB->get_records('block_customlist', null, 'sortorder');
+            customlist::change_sortorder($instances, $prev_listitem->id, $action);
+        }*/
     }
     else {
         $listitem->description = '';
