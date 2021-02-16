@@ -25,13 +25,6 @@ class edit_listitem_form extends moodleform {
         else
             $mform->setDefault('sortorder', $maxsortorder);
 
-        /*$mform->addElement('hidden', 'sortorder');
-
-        if (isset($listitem->sortorder))
-            $mform->setDefault('sortorder', $listitem->sortorder);
-        else
-            $mform->setDefault('sortorder', $maxsortorder);*/
-
         $mform->setType('sortorder', PARAM_INT);
 
         $mform->addElement('text', 'title', get_string('title', 'block_customlist'), array('size' => 45));

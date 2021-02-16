@@ -16,9 +16,6 @@ $neworder = optional_param('neworder', 0, PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
 $perpage = optional_param('perpage', get_config('customlist', 'maxlistitemnum'), PARAM_INT);
 
-if ($mode !== 'full' && $mode !== 'item')
-    $mode = 'full';
-
 $context = context_system::instance();
 $site = get_site();
 
@@ -29,6 +26,16 @@ if (!has_capability('block/customlist:view', $context)) {
 }
 
 $PAGE->set_context($context);
+
+$available_modes = array('full', 'item');
+
+if (!in_array($mode, $available_modes))
+    $mode = 'full';
+
+$available_actions = array('up', 'down', 'changeorder');
+
+if ($action && !in_array($action, $available_actions))
+    redirect($returnurl);
 
 $pageurl = '/blocks/customlist/listitem_view.php';
 $pageparams = array();
@@ -66,6 +73,8 @@ $baseurl = new moodle_url($pageurl, $pageparams);
 
 // Изменение порядка сортировки элементов (поле sortorder)
 if ($action and confirm_sesskey()) {
+    // TODO: put this code in change_sortorder function
+    // TODO: use api function change_sortorder
     if ($DB->record_exists('block_customlist', array('id' => $id))) {
         if ($action === 'changeorder') {
             $listitem = $DB->get_record('block_customlist', array('id' => $id));
@@ -74,7 +83,7 @@ if ($action and confirm_sesskey()) {
             if ($neworder < 0) $neworder = 0;
             if ($neworder > $maxsortorder) $neworder = $maxsortorder;
 
-            if ($listitem->sortorder !== $neworder)
+            if ((int)$listitem->sortorder !== $neworder)
             {
                 if ($listitem->sortorder > $neworder)
                     $action = 'up';
@@ -82,6 +91,11 @@ if ($action and confirm_sesskey()) {
                     $action = 'down';
 
                 $offset = abs($listitem->sortorder - $neworder);
+            } else {
+                if ($mode === 'full')
+                    $baseurl->param('page', floor($listitem->sortorder / $perpage));
+
+                redirect($baseurl);
             }
         } else $offset = 1;
 
@@ -91,13 +105,16 @@ if ($action and confirm_sesskey()) {
 
             $instances = customlist::resort_instances($instances, $instanceid, $action, $offset);
 
-            $baseurl->param('page', ceil($instances[$instanceid]->sortorder / $perpage));
+            if ($mode === 'full')
+                $baseurl->param('page', floor($instances[$instanceid]->sortorder / $perpage));
+
             redirect($baseurl);
         }
     }
 }
 
 $PAGE->set_url($baseurl);
+
 $PAGE->set_title($pagetitle);
 
 $PAGE->set_heading($pagetitle);
@@ -117,7 +134,6 @@ if ($mode === 'full') {
 
         $add_returnurl_params = array(
             'mode' => 'full',
-            //'page' => ceil($listitem_count / $perpage) - 1,
             'page' => 0,
             'perpage' => $perpage,
             'returnurl' => $returnurl
@@ -148,7 +164,6 @@ if ($mode === 'item') {
     redirect($baseurl);
 }*/
 
-//$url = new moodle_url('/enrol/instances.php', array('sesskey'=>sesskey(), 'id'=> $id));
 echo $OUTPUT->header();
 
 echo '<link rel="stylesheet" href="main.css">';

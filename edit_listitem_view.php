@@ -21,6 +21,11 @@ if (!has_capability('block/customlist:addinstance', $context)) {
 
 $PAGE->set_context($context);
 
+$available_actions = array('add', 'edit', 'delete');
+
+if (!in_array($action, $available_actions))
+    redirect($returnurl);
+
 if ($action === 'delete' && confirm_sesskey())
 {
     if ($DB->record_exists('block_customlist', array('id' => $id)))
@@ -31,7 +36,7 @@ if ($action === 'delete' && confirm_sesskey())
         $fs = get_file_storage();
         $fs->delete_area_files($context->id, 'block_customlist', 'listitem', $id);
 
-        customlist::change_sortorder($instances, $id, $action);
+        customlist::recalc_sortorder($instances, $id, $action);
     }
 
     redirect($returnurl);
@@ -74,11 +79,13 @@ $basenode->make_active();
 if ($action === 'add') {
     $add_returnurl_params = array(
         'mode' => 'full',
-        /*'page' => ceil($listitem_count / $perpage) - 1,*/
         'page' => 0,
-        'perpage' => (new moodle_url($returnurl))->get_param('perpage'),
-        'returnurl' => new moodle_url('/', array('redirect' => 0))
+        'returnurl' => $returnurl
     );
+
+    if ((new moodle_url($returnurl))->get_param('perpage'))
+        $add_returnurl_params['perpage'] = (new moodle_url($returnurl))->get_param('perpage');
+
     $add_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $add_returnurl_params);
 
     $settingsnode = $PAGE->settingsnav->add(get_string('listitemsview', 'block_customlist'), $add_returnurl);
@@ -119,46 +126,73 @@ $edit_listitem_form = new edit_listitem_form($baseurl,
 
 if($edit_listitem_form->is_cancelled()) {
     redirect($returnurl);
-} else if ($listitem = $edit_listitem_form->get_data()) {
+} else if ($new_listitem = $edit_listitem_form->get_data()) {
     require_capability('block/customlist:addinstance', $context);
 
     if ($action === 'edit') {
-        $listitem = file_postupdate_standard_editor($listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $listitem->id);
-        $listitem->timemodified = time();
+        $new_listitem = file_postupdate_standard_editor($new_listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $new_listitem->id);
+        $new_listitem->timemodified = time();
 
-        /*$maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
-        if ($listitem->sortorder < 0) $listitem->sortorder = 0;
-        if ($listitem->sortorder > $maxsortorder) $listitem->sortorder = $maxsortorder + 1;
+        $returnurl_params = array(
+            'id' => $new_listitem->id,
+            'action' => 'changeorder',
+            'neworder' => $new_listitem->sortorder,
+            'sesskey' => sesskey()
+        );
 
-        if ($prev_listitem = $DB->get_record('block_customlist', array('sortorder' => $listitem->sortorder)))
-        {
-            $instances = $DB->get_records('block_customlist', null, 'sortorder');
-            customlist::change_sortorder($instances, $prev_listitem->id, $action);
-        }*/
+        $returnurl = new moodle_url($returnurl);
+
+        if ($param_mode = $returnurl->get_param('mode'))
+            $returnurl_params['mode'] = $param_mode;
+        else
+            $returnurl_params['mode'] = 'full';
+
+        if ($param_returnurl = $returnurl->get_param('returnurl'))
+            $returnurl_params['returnurl'] = $param_returnurl;
+        else
+            $returnurl_params['returnurl'] = $returnurl;
+
+        $returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $returnurl_params);
+
+        $new_listitem->sortorder = $listitem->sortorder;
+
+        // TODO: use api function change_sortorder
+
+        $DB->update_record('block_customlist', $new_listitem);
     }
-    else {
-        $listitem->description = '';
-        $listitem->descriptionformat = FORMAT_HTML;
-        $listitem->timecreated = time();
-        $listitem->timemodified = time();
 
-        //$returnurl->param('page', );
+    if ($action === 'add') {
+        $new_listitem->description = '';
+        $new_listitem->descriptionformat = FORMAT_HTML;
+        $new_listitem->timecreated = time();
+        $new_listitem->timemodified = time();
+
+        $returnurl_params = array(
+            'id' => $new_listitem->id,
+            'action' => 'changeorder',
+            'neworder' => $new_listitem->sortorder,
+            'sesskey' => sesskey()
+        );
+
+        $returnurl = new moodle_url($returnurl);
+
+        // TODO: $returnurl->param('page', ); same as for edit
 
         $maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
-        if ($listitem->sortorder < 0) $listitem->sortorder = 0;
-        if ($listitem->sortorder > $maxsortorder) $listitem->sortorder = $maxsortorder + 1;
+        if ($new_listitem->sortorder < 0) $new_listitem->sortorder = 0;
+        if ($new_listitem->sortorder > $maxsortorder) $new_listitem->sortorder = $maxsortorder + 1;
 
-        if ($prev_listitem = $DB->get_record('block_customlist', array('sortorder' => $listitem->sortorder)))
+        if ($prev_listitem = $DB->get_record('block_customlist', array('sortorder' => $new_listitem->sortorder)))
         {
             $instances = $DB->get_records('block_customlist', null, 'sortorder');
-            customlist::change_sortorder($instances, $prev_listitem->id, $action);
+            customlist::recalc_sortorder($instances, $prev_listitem->id, $action);
         }
 
-        $listitem->id = $DB->insert_record('block_customlist', $listitem);
-        $listitem = file_postupdate_standard_editor($listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $listitem->id);
-    }
+        $new_listitem->id = $DB->insert_record('block_customlist', $new_listitem);
+        $new_listitem = file_postupdate_standard_editor($new_listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $new_listitem->id);
 
-    $DB->update_record('block_customlist', $listitem);
+        $DB->update_record('block_customlist', $new_listitem);
+    }
 
     redirect($returnurl);
 } else {

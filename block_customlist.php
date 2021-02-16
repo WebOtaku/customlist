@@ -5,7 +5,7 @@ class block_customlist extends block_base {
         $this->title = get_string('defaulttitle', 'block_customlist');
     }
 
-    // Задаёт содержимое для блоков
+    // Задаёт содержимо блока
     public function get_content()
     {
         global $DB, $OUTPUT;
@@ -91,7 +91,7 @@ class block_customlist extends block_base {
                 $html_str .= '<li>';
                 $listitemsurlparams = array(
                     'mode' => 'full',
-                    'returnurl' => $this->page->url
+                    'returnurl' => $this->page->url,
                 );
                 $listitemsurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemsurlparams);
                 $html_str .= html_writer::link($listitemsurl, get_string('listitemsview', 'block_customlist'));
@@ -111,18 +111,8 @@ class block_customlist extends block_base {
         return true;
     }
 
-    /*public function specialization() {
-        if (isset($this->config)) {
-            if (empty($this->config->title)) {
-                $this->title = get_string('defaulttitle', 'block_customlist');
-            } else {
-                $this->title = $this->config->title;
-            }
-        }
-    }*/
-
     /**
-     * Проверяет есть ли право "block/customlist:addinstance" у текущего пользователя
+     * Проверяет есть ли право $capability у текущего пользователя
      * @return bool да/нет
      * */
     private function check_capability($capability) {

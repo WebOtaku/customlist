@@ -5,8 +5,10 @@ namespace block_customlist;
 use moodle_url;
 use pix_icon;
 
-class customlist {
-    public static function listitem_view($listitem, $context, $returnurl, $baseurl, $mode) {
+class customlist
+{
+    public static function listitem_view($listitem, $context, $returnurl, $baseurl, $mode)
+    {
         global $OUTPUT;
 
         $html_str = '';
@@ -19,12 +21,18 @@ class customlist {
                 'returnurl' => $baseurl,
             );
             $html_str .= '<a href=' . new moodle_url('/blocks/customlist/listitem_view.php', $listitemurl_params) . ' class="">
-            <h4 style="color: #009688;">' . $listitem->title . '</h4>
-        </a>';
+                <h4 style="color: #009688;">
+                    ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . $listitem->sortorder . ') ' : '')
+                . $listitem->title . '
+                </h4>
+            </a>';
         }
 
         if ($mode === 'item')
-            $html_str .= '<h4>' . $listitem->title . '</h4>';
+            $html_str .= '<h4>
+                ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . $listitem->sortorder . ') ' : '')
+                . $listitem->title . '
+            </h4>';
 
         $html_str .= '<div>';
 
@@ -36,25 +44,16 @@ class customlist {
         }
 
         if ($listitem->link)
-            $html_str .= get_string('link', 'block_customlist').': <a href="'.$listitem->link.'">'.$listitem->link.'</a>';
+            $html_str .= get_string('link', 'block_customlist') . ': <a href="' . $listitem->link . '">' . $listitem->link . '</a>';
 
         $html_str .= '<hr>';
         $html_str .= '</div>';
 
-        if (has_capability('block/customlist:addinstance', $context))
-        {
+        if (has_capability('block/customlist:addinstance', $context)) {
             $html_str .= '<div>';
 
-            if ($mode === 'full') {
-                /*$edit_returnurl_params = array(
-                    'mode' => 'full',
-                    'page' => $page,
-                    'perpage' => $perpage,
-                    'returnurl' => $returnurl,
-                );
-                $edit_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $edit_returnurl_params);*/
+            if ($mode === 'full')
                 $edit_returnurl = $baseurl;
-            }
 
             if ($mode === 'item') {
                 $edit_returnurl_params = array(
@@ -74,22 +73,11 @@ class customlist {
             $editurl = new moodle_url('/blocks/customlist/edit_listitem_view.php', $editurl_params);
             $html_str .= $OUTPUT->single_button($editurl, get_string('edit', 'block_customlist'));
 
-            if ($mode === 'full') {
-                /*$del_returnurl_params = array(
-                    'mode' => 'full',
-                    'page' => $page,
-                    'perpage' => $perpage,
-                    'returnurl' => $returnurl
-                );
-                $del_returnurl = new moodle_url('/blocks/customlist/listitem_view.php', $del_returnurl_params);*/
+            if ($mode === 'full')
                 $del_returnurl = $baseurl;
-            }
 
-            if ($mode === 'item') {
-                /*$del_returnurl_params = array('redirect' => 0);
-                $del_returnurl = new moodle_url('/', $del_returnurl_params);*/
+            if ($mode === 'item')
                 $del_returnurl = $returnurl;
-            }
 
             $delurl_params = array(
                 'id' => $listitem->id,
@@ -106,7 +94,7 @@ class customlist {
             $html_str .= '<div style="margin-top: .5rem;">';
             $listitemsurlparams = array(
                 'mode' => 'full',
-                'returnurl' => new moodle_url('/', array('redirect' => 0))
+                'returnurl' => $baseurl
             );
             $listitemsurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemsurlparams);
             $html_str .= $OUTPUT->single_button($listitemsurl, get_string('listitemsview', 'block_customlist'));
@@ -118,8 +106,9 @@ class customlist {
         return $html_str;
     }
 
-    public static function fulllist_view($listitems, $context, $returnurl, $baseurl, $mode, $updowncount, $listitem_count) {
-        global $OUTPUT, $DB;
+    public static function fulllist_view($listitems, $context, $returnurl, $baseurl, $mode, $updowncount, $listitem_count)
+    {
+        global $OUTPUT;
 
         $html_str = '';
 
@@ -137,18 +126,14 @@ class customlist {
         // Второй способ
         $html_str .= '<div class="accordion" id="clAccordion">';
 
-        foreach($listitems as $listitem)
-        {
+        foreach ($listitems as $listitem) {
             $html_str .= '
             <div class="cm-accordion-item">
-                <h2 class="cm-accordion-header" id="heading'. $listitem->id .'">
+                <h2 class="cm-accordion-header" id="heading' . $listitem->id . '">
                     <button class="cm-accordion-button collapsed" type="button" data-toggle="collapse" 
-                            data-target="#collapse'. $listitem->id .'" aria-expanded="true" aria-controls="collapse'. $listitem->id .'">';
-
-
+                            data-target="#collapse' . $listitem->id . '" aria-expanded="true" aria-controls="collapse' . $listitem->id . '">';
 
             if (has_capability('block/customlist:addinstance', $context)) {
-
                 if ($updowncount > 1) {
                     $aurlparams = array(
                         'id' => $listitem->id,
@@ -160,10 +145,6 @@ class customlist {
                     $html_str .= $OUTPUT->spacer() . '<span style="margin-right: .5rem"></span>';
                 }
 
-                /*$changeorderurlparams = array(
-                    'id' => $listitem->id,
-                    'action' => 'changeorder'
-                );*/
                 $changeorderurl = new moodle_url('/blocks/customlist/listitem_view.php');
 
                 $html_str .= '
@@ -197,9 +178,9 @@ class customlist {
             $html_str .= '
                     </button>
                 </h2>
-                <div id="collapse'. $listitem->id .'" class="cm-accordion-collapse collapse" aria-labelledby="heading'. $listitem->id .'" data-parent="#clAccordion">
+                <div id="collapse' . $listitem->id . '" class="cm-accordion-collapse collapse" aria-labelledby="heading' . $listitem->id . '" data-parent="#clAccordion">
                     <div class="cm-accordion-body">
-                        '. customlist::listitem_view($listitem, $context, $returnurl, $baseurl, $mode) .'
+                        ' . customlist::listitem_view($listitem, $context, $returnurl, $baseurl, $mode) . '
                     </div>
                 </div>
             </div>
@@ -211,11 +192,11 @@ class customlist {
         return $html_str;
     }
 
-    public static function resort_instances($instances, $instanceid, $action, $offset = 1) {
+    public static function resort_instances($instances, $instanceid, $action, $offset = 1)
+    {
         global $DB;
 
-        if ($action === 'up' || $action === 'down')
-        {
+        if ($action === 'up' || $action === 'down') {
             $resorted = array_values($instances);
             $order = array_keys($instances);
             $order = array_flip($order);
@@ -248,37 +229,37 @@ class customlist {
                     }
                 }
             }
-        }
-        else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
+        } else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
 
         return $instances;
     }
 
-    public static function change_sortorder($instances, $instanceid, $action) {
+    public static function recalc_sortorder($instances, $instanceid, $action)
+    {
         global $DB;
 
-        if ($action === 'delete' || $action === 'add')
-        {
+        if ($action === 'delete' || $action === 'add') {
             $resorted = array_values($instances);
             $order = array_keys($instances);
             $order = array_flip($order);
             $pos = $order[$instanceid];
 
             foreach ($resorted as $sortorder => $instance) {
-                if ((($action === 'delete') && ($sortorder > $pos)) ||
-                    (($action === 'add') && ($sortorder >= $pos)))
-                {
-                    if ($action === 'delete')
-                        $instance->sortorder -= 1;
+                if ((($action === 'add') && ($sortorder >= $pos)) ||
+                    (($action === 'delete') && ($sortorder > $pos))) {
                     if ($action === 'add')
                         $instance->sortorder += 1;
+
+                    if ($action === 'delete')
+                        $instance->sortorder -= 1;
 
                     $DB->update_record('block_customlist', $instance);
                 }
             }
-        }
-        else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
+        } else throw new \Exception(get_string('nosuchaction', 'block_customlist'));
 
         return $instances;
     }
+
+    // TODO: public static function change_sortorder() - api for change sortorder (now on listitem_view.php)
 }
