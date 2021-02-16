@@ -94,7 +94,7 @@ class customlist
             $html_str .= '<div style="margin-top: .5rem;">';
             $listitemsurlparams = array(
                 'mode' => 'full',
-                'returnurl' => $baseurl
+                'returnurl' => $baseurl // TODO: приводит к разрастанию url
             );
             $listitemsurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemsurlparams);
             $html_str .= $OUTPUT->single_button($listitemsurl, get_string('listitemsview', 'block_customlist'));
@@ -171,6 +171,8 @@ class customlist
 
                 ++$updowncount;
 
+            } else {
+                $html_str .= '<span class="list-icon">'.$OUTPUT->pix_icon('t/switch_minus', 'collapsed') . '</span> ';
             }
 
             $html_str .= $listitem->title;
