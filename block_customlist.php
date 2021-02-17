@@ -59,10 +59,11 @@ class block_customlist extends block_base {
                         'returnurl' => $this->page->url,
                     );
                     $listitemurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemurlparams);
+                    $iconurl = new moodle_url('/blocks/customlist/list-icon.svg');
                     $html_str .= html_writer::link($listitemurl,
                         ((!$this->check_capability('block/customlist:addinstance'))?
-                             '<span class="list-icon">'.$OUTPUT->pix_icon('t/switch_minus', 'collapsed', 'moodle') . '</span> ' : '')
-                         . $listitem->title
+                             '<img width="10" src="'.$iconurl.'">' . $OUTPUT->spacer() : '')
+                          . $listitem->title
                     );
                     $html_str .= '</li>';
                 }

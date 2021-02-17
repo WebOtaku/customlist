@@ -106,7 +106,7 @@ if ($action === 'edit') {
     if (!$listitem = $DB->get_record('block_customlist', array('id' => $id))) {
         redirect($returnurl);
     }
-};
+}
 
 $descriptionoptions = array(
     'trusttext' => true,

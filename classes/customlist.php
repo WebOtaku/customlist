@@ -171,7 +171,9 @@ class customlist
 
                 ++$updowncount;
             } else {
-                $html_str .= '<span class="list-icon">'.$OUTPUT->pix_icon('t/switch_minus', 'collapsed') . '</span> ';
+                //$html_str .= '<span class="list-icon">'.$OUTPUT->pix_icon('t/switch_minus', 'collapsed', 'moodle', array('style' => 'font-size: 5px;')) . '</span> ';
+                $iconurl = new moodle_url('/blocks/customlist/list-icon.svg');
+                $html_str .= '<img style="width: 10px;" src="'.$iconurl.'">' .  $OUTPUT->spacer();
             }
 
             $html_str .= $listitem->title;
