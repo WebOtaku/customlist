@@ -19,22 +19,13 @@ class edit_listitem_form extends moodleform {
         $mform->addElement('header', 'header', $pagetitle);
 
         $mform->addElement('text', 'sortorder', get_string('sortorder', 'block_customlist') . ' (0, 1, 2, ...)', array('size' => 1, 'pattern' => '[0-9\-]+'));
-
-        if (isset($listitem->sortorder))
-            $mform->setDefault('sortorder', $listitem->sortorder);
-        else
-            $mform->setDefault('sortorder', $maxsortorder);
+        $mform->setDefault('sortorder', $maxsortorder);
 
         $mform->setType('sortorder', PARAM_INT);
 
         $mform->addElement('text', 'title', get_string('title', 'block_customlist'), array('size' => 45));
         $mform->addRule('title', get_string('required'), 'required', null, 'client');
-
-        if (isset($listitem->title))
-            $mform->setDefault('title', $listitem->title);
-        else
-            $mform->setDefault('title', '');
-
+        $mform->setDefault('title', '');
         $mform->setType('title', PARAM_TEXT);
 
         $mform->addElement('editor', 'description_editor',
@@ -42,12 +33,7 @@ class edit_listitem_form extends moodleform {
         $mform->setType('description_editor', PARAM_RAW);
 
         $mform->addElement('text', 'link', get_string('link', 'block_customlist'), array('size' => 45));
-
-        if (isset($listitem->link))
-            $mform->setDefault('link', $listitem->link);
-        else
-            $mform->setDefault('link', '');
-
+        $mform->setDefault('link', '');
         $mform->setType('link', PARAM_TEXT);
 
         $mform->addElement('hidden', 'id');

@@ -50,6 +50,9 @@ $listitem_count = 0;
 if ($mode === 'full') {
     $listitem_count = $DB->count_records('block_customlist');
 
+    if (!$listitem_count)
+        redirect($returnurl);
+
     if ($perpage < 1) $perpage = 1;
 
     if ($page < 0) $page = 0;
@@ -76,9 +79,12 @@ if ($action and confirm_sesskey()) {
     // TODO: put this code in change_sortorder function
     // TODO: use api function change_sortorder
     if ($DB->record_exists('block_customlist', array('id' => $id))) {
-        if ($action === 'changeorder') {
+        if ($action === 'changeorder')
+        {
             $listitem = $DB->get_record('block_customlist', array('id' => $id));
+
             $maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
+            $neworder -= 1;
 
             if ($neworder < 0) $neworder = 0;
             if ($neworder > $maxsortorder) $neworder = $maxsortorder;
@@ -173,14 +179,12 @@ if ($mode === 'item') {
 }
 
 if ($mode === 'full') {
-    if ($listitem_count) {
-        echo $OUTPUT->paging_bar($listitem_count, $page, $perpage, $baseurl);
+    echo $OUTPUT->paging_bar($listitem_count, $page, $perpage, $baseurl);
 
-        echo customlist::fulllist_view($listitems, $context, $returnurl, $baseurl,
-            $mode, $updowncount, $listitem_count);
+    echo customlist::fulllist_view($listitems, $context, $returnurl, $baseurl,
+        $mode, $updowncount, $listitem_count);
 
-        echo $OUTPUT->paging_bar($listitem_count, $page, $perpage, $baseurl);
-    } else echo '<h3>'. get_string('emptylist', 'block_customlist') .'</h3>';
+    echo $OUTPUT->paging_bar($listitem_count, $page, $perpage, $baseurl);
 }
 
 echo $OUTPUT->footer();

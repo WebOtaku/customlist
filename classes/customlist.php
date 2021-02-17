@@ -22,7 +22,7 @@ class customlist
             );
             $html_str .= '<a href=' . new moodle_url('/blocks/customlist/listitem_view.php', $listitemurl_params) . ' class="">
                 <h4 style="color: #009688;">
-                    ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . $listitem->sortorder . ') ' : '')
+                    ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
                 . $listitem->title . '
                 </h4>
             </a>';
@@ -30,7 +30,7 @@ class customlist
 
         if ($mode === 'item')
             $html_str .= '<h4>
-                ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . $listitem->sortorder . ') ' : '')
+                ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
                 . $listitem->title . '
             </h4>';
 
@@ -154,7 +154,7 @@ class customlist
                         <input type="hidden" name="mode" value="full">
                         <input type="hidden" name="returnurl" value="' . $returnurl . '">
                         <input type="hidden" name="sesskey" value="' . sesskey() . '">
-                        <input class="cm-input cm-input-sortorder" type="text" name="neworder" value="' . $listitem->sortorder . '" pattern="[0-9\-]+">
+                        <input class="cm-input cm-input-sortorder" type="text" name="neworder" value="' . ($listitem->sortorder + 1) . '" pattern="[0-9\-]+">
                     </form>
                 ';
 
@@ -170,7 +170,6 @@ class customlist
                 }
 
                 ++$updowncount;
-
             } else {
                 $html_str .= '<span class="list-icon">'.$OUTPUT->pix_icon('t/switch_minus', 'collapsed') . '</span> ';
             }
@@ -240,7 +239,8 @@ class customlist
     {
         global $DB;
 
-        if ($action === 'delete' || $action === 'add') {
+        if ($action === 'delete' || $action === 'add')
+        {
             $resorted = array_values($instances);
             $order = array_keys($instances);
             $order = array_flip($order);

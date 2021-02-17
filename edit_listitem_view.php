@@ -106,10 +106,7 @@ if ($action === 'edit') {
     if (!$listitem = $DB->get_record('block_customlist', array('id' => $id))) {
         redirect($returnurl);
     }
-}
-
-$maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
-$maxsortorder = ($maxsortorder === null)? 0 : ++$maxsortorder;
+};
 
 $descriptionoptions = array(
     'trusttext' => true,
@@ -121,8 +118,23 @@ $descriptionoptions = array(
 
 $listitem = file_prepare_standard_editor($listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $listitem->id);
 
+$listitem_clone = $listitem;
+
+if ($action === 'edit') {
+    $listitem_clone = clone $listitem;
+    $listitem_clone->sortorder += 1;
+}
+
+$maxsortorder = 0;
+
+if ($action === 'add') {
+    $maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
+    $maxsortorder = ($maxsortorder === null)? 0 : ++$maxsortorder;
+    $maxsortorder += 1;
+}
+
 $edit_listitem_form = new edit_listitem_form($baseurl,
-    array($listitem, $maxsortorder, $action, $pagetitle, $descriptionoptions));
+    array($listitem_clone, $maxsortorder, $action, $pagetitle, $descriptionoptions));
 
 if($edit_listitem_form->is_cancelled()) {
     redirect($returnurl);
@@ -167,18 +179,11 @@ if($edit_listitem_form->is_cancelled()) {
         $new_listitem->timecreated = time();
         $new_listitem->timemodified = time();
 
-        $returnurl_params = array(
-            'id' => $new_listitem->id,
-            'action' => 'changeorder',
-            'neworder' => $new_listitem->sortorder,
-            'sesskey' => sesskey()
-        );
-
-        $returnurl = new moodle_url($returnurl);
-
         // TODO: $returnurl->param('page', ); same as for edit
 
-        $maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
+        //$maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
+        $new_listitem->sortorder -= 1;
+
         if ($new_listitem->sortorder < 0) $new_listitem->sortorder = 0;
         if ($new_listitem->sortorder > $maxsortorder) $new_listitem->sortorder = $maxsortorder + 1;
 
