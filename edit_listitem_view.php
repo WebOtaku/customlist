@@ -138,9 +138,9 @@ $edit_listitem_form = new edit_listitem_form($baseurl,
 
 if($edit_listitem_form->is_cancelled()) {
     redirect($returnurl);
-} else if ($new_listitem = $edit_listitem_form->get_data()) {
-    require_capability('block/customlist:addinstance', $context);
-
+}
+else if ($new_listitem = $edit_listitem_form->get_data())
+{
     if ($action === 'edit') {
         $new_listitem = file_postupdate_standard_editor($new_listitem, 'description', $descriptionoptions, $context, 'block_customlist', 'listitem', $new_listitem->id);
         $new_listitem->timemodified = time();
@@ -181,7 +181,6 @@ if($edit_listitem_form->is_cancelled()) {
 
         // TODO: $returnurl->param('page', ); same as for edit
 
-        //$maxsortorder = $DB->get_field_sql('SELECT MAX(sortorder) FROM {block_customlist}');
         $new_listitem->sortorder -= 1;
 
         if ($new_listitem->sortorder < 0) $new_listitem->sortorder = 0;

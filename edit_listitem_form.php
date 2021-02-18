@@ -20,7 +20,6 @@ class edit_listitem_form extends moodleform {
 
         $mform->addElement('text', 'sortorder', get_string('sortorder', 'block_customlist') . ' (0, 1, 2, ...)', array('size' => 1, 'pattern' => '[0-9\-]+'));
         $mform->setDefault('sortorder', $maxsortorder);
-
         $mform->setType('sortorder', PARAM_INT);
 
         $mform->addElement('text', 'title', get_string('title', 'block_customlist'), array('size' => 45));

@@ -18,9 +18,10 @@ class block_customlist extends block_base {
         $this->content->text = '';
         $this->content->footer = '';
 
-        if(!$maxlistitemnum = get_config('customlist', 'maxelslistnum')) {
+        $maxlistitemnum = get_config('customlist', 'maxlistitemnum');
+
+        if(!$maxlistitemnum || $maxlistitemnum < 1)
             $maxlistitemnum = 10;
-        }
 
         $listitems = array();
 
@@ -119,10 +120,9 @@ class block_customlist extends block_base {
      * Проверяет есть ли право $capability у текущего пользователя
      * @return bool да/нет
      * */
-    private function check_capability($capability) {
-
+    private function check_capability($capability)
+    {
         $context = context_system::instance();
-
         return has_capability($capability, $context);
     }
 

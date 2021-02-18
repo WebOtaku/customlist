@@ -14,7 +14,13 @@ $updowncount = optional_param('updowncount', 1, PARAM_INT);
 $neworder = optional_param('neworder', 0, PARAM_INT);
 
 $page = optional_param('page', 0, PARAM_INT);
-$perpage = optional_param('perpage', get_config('customlist', 'maxlistitemnum'), PARAM_INT);
+
+$maxlistitemnum = get_config('customlist', 'maxlistitemnum');
+
+if(!$maxlistitemnum || $maxlistitemnum < 1)
+    $maxlistitemnum = 10;
+
+$perpage = optional_param('perpage', $maxlistitemnum, PARAM_INT);
 
 $context = context_system::instance();
 $site = get_site();
@@ -75,7 +81,8 @@ $pageparams['returnurl'] = $returnurl;
 $baseurl = new moodle_url($pageurl, $pageparams);
 
 // Изменение порядка сортировки элементов (поле sortorder)
-if ($action and confirm_sesskey()) {
+if ($action && confirm_sesskey()) {
+    require_capability('block/customlist:addinstance', $context);
     // TODO: put this code in change_sortorder function
     // TODO: use api function change_sortorder
     if ($DB->record_exists('block_customlist', array('id' => $id))) {
@@ -137,7 +144,6 @@ $basenode->make_active();
 
 if ($mode === 'full') {
     if (has_capability('block/customlist:addinstance', $context)) {
-
         $add_returnurl_params = array(
             'mode' => 'full',
             'page' => 0,
