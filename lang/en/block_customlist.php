@@ -5,6 +5,8 @@ $string['customlist'] = 'Custom List';
 $string['customlist:addinstance'] = 'Add a new "Custom List" block';
 $string['customlist:myaddinstance'] = 'Add a new "Custom List" block';
 $string['customlist:view'] = 'View "Custom List" block';
+$string['customlist:edit'] = 'Edit "Custom List" block';
+
 $string['blocktitle'] = 'Title';
 
 $string['listitemsview'] = 'Full list';

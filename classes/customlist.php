@@ -22,7 +22,7 @@ class customlist
             );
             $html_str .= '<a href=' . new moodle_url('/blocks/customlist/listitem_view.php', $listitemurl_params) . ' class="">
                 <h4 style="color: #009688;">
-                    ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
+                    ' . ((has_capability('block/customlist:edit', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
                 . $listitem->title . '
                 </h4>
             </a>';
@@ -30,7 +30,7 @@ class customlist
 
         if ($mode === 'item')
             $html_str .= '<h4>
-                ' . ((has_capability('block/customlist:addinstance', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
+                ' . ((has_capability('block/customlist:edit', $context)) ? '(' . ($listitem->sortorder + 1) . ') ' : '')
                 . $listitem->title . '
             </h4>';
 
@@ -49,7 +49,7 @@ class customlist
         $html_str .= '<hr>';
         $html_str .= '</div>';
 
-        if (has_capability('block/customlist:addinstance', $context)) {
+        if (has_capability('block/customlist:edit', $context)) {
             $html_str .= '<div>';
 
             if ($mode === 'full')
@@ -133,7 +133,7 @@ class customlist
                     <button class="cm-accordion-button collapsed" type="button" data-toggle="collapse" 
                             data-target="#collapse' . $listitem->id . '" aria-expanded="true" aria-controls="collapse' . $listitem->id . '">';
 
-            if (has_capability('block/customlist:addinstance', $context)) {
+            if (has_capability('block/customlist:edit', $context)) {
                 if ($updowncount > 1) {
                     $aurlparams = array(
                         'id' => $listitem->id,

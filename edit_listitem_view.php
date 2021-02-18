@@ -15,8 +15,8 @@ $site = get_site();
 
 require_login();
 
-if (!has_capability('block/customlist:addinstance', $context)) {
-    print_error('nopermissions', 'error', '', 'block/customlist:addinstance');
+if (!has_capability('block/customlist:edit', $context)) {
+    print_error('nopermissions', 'error', '', 'block/customlist:edit');
 }
 
 $PAGE->set_context($context);

@@ -34,7 +34,7 @@ class block_customlist extends block_base {
                 foreach ($listitems as $listitem) {
                     $html_str .= '<li>';
 
-                    if ($this->check_capability('block/customlist:addinstance'))
+                    if ($this->check_capability('block/customlist:edit'))
                     {
                         $delurlparams = array(
                             'id' => $listitem->id,
@@ -62,7 +62,7 @@ class block_customlist extends block_base {
                     $listitemurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemurlparams);
                     $iconurl = new moodle_url('/blocks/customlist/list-icon.svg');
                     $html_str .= html_writer::link($listitemurl,
-                        ((!$this->check_capability('block/customlist:addinstance'))?
+                        ((!$this->check_capability('block/customlist:edit'))?
                              '<img width="10" src="'.$iconurl.'">' . $OUTPUT->spacer() : '')
                           . $listitem->title
                     );
@@ -75,11 +75,11 @@ class block_customlist extends block_base {
             }
         }
 
-        if (count($listitems) || $this->check_capability('block/customlist:addinstance')) {
+        if (count($listitems) || $this->check_capability('block/customlist:edit')) {
 
             $html_str = '<ul style="list-style: none; margin-left: -15px;">';
 
-            if ($this->check_capability('block/customlist:addinstance')) {
+            if ($this->check_capability('block/customlist:edit')) {
                 $html_str .= '<li>';
 
                 $addurlparams = array(
@@ -129,5 +129,14 @@ class block_customlist extends block_base {
     // Позволяет добавлять несколько таких блоков в один курс
     public function instance_allow_multiple() {
         return false;
+    }
+
+    public function applicable_formats() {
+        return array(
+            'all' => false,
+            'site' => true,
+            'site-index' => true,
+            'my' => true
+        );
     }
 }

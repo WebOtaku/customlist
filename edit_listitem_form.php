@@ -18,7 +18,7 @@ class edit_listitem_form extends moodleform {
 
         $mform->addElement('header', 'header', $pagetitle);
 
-        $mform->addElement('text', 'sortorder', get_string('sortorder', 'block_customlist') . ' (0, 1, 2, ...)', array('size' => 1, 'pattern' => '[0-9\-]+'));
+        $mform->addElement('text', 'sortorder', get_string('sortorder', 'block_customlist') . ' (1, 2, 3, ...)', array('size' => 1, 'pattern' => '[0-9\-]+'));
         $mform->setDefault('sortorder', $maxsortorder);
         $mform->setType('sortorder', PARAM_INT);
 

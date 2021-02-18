@@ -28,7 +28,7 @@ $site = get_site();
 require_login();
 
 if (!has_capability('block/customlist:view', $context)) {
-    print_error('nopermissions', 'error', '', 'block/customlist:addinstance');
+    print_error('nopermissions', 'error', '', 'block/customlist:view');
 }
 
 $PAGE->set_context($context);
@@ -82,7 +82,7 @@ $baseurl = new moodle_url($pageurl, $pageparams);
 
 // Изменение порядка сортировки элементов (поле sortorder)
 if ($action && confirm_sesskey()) {
-    require_capability('block/customlist:addinstance', $context);
+    require_capability('block/customlist:edit', $context);
     // TODO: put this code in change_sortorder function
     // TODO: use api function change_sortorder
     if ($DB->record_exists('block_customlist', array('id' => $id))) {
@@ -143,7 +143,7 @@ $basenode = $backnode->add($pagetitle, $modbaseurl);
 $basenode->make_active();
 
 if ($mode === 'full') {
-    if (has_capability('block/customlist:addinstance', $context)) {
+    if (has_capability('block/customlist:edit', $context)) {
         $add_returnurl_params = array(
             'mode' => 'full',
             'page' => 0,

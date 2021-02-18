@@ -5,6 +5,8 @@ $string['customlist'] = 'Настраиваемый список';
 $string['customlist:addinstance'] = 'Добавить новый блок "Настраиваемый список"';
 $string['customlist:myaddinstance'] = 'Добавить новый блок "Настраиваемый список"';
 $string['customlist:view'] = 'Видеть блок "Настраиваемый список"';
+$string['customlist:edit'] = 'Редактировать блок "Настраиваемый список"';
+
 $string['blocktitle'] = 'Заголовок';
 
 $string['listitemsview'] = 'Полный список';
