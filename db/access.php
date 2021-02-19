@@ -12,9 +12,8 @@ $capabilities = array(
 
     'block/customlist:addinstance' => array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
-
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager'        => CAP_PROHIBIT,
 //            'coursecreator'  => CAP_PROHIBIT,

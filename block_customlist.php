@@ -26,7 +26,7 @@ class block_customlist extends block_base {
         $listitems = array();
 
         if ($this->check_capability('block/customlist:view')) {
-            $listitems = $DB->get_records('block_customlist', null, 'sortorder', '*' , 0, $maxlistitemnum);
+            $listitems = $DB->get_records('block_customlist', null, 'sortorder', '*', 0, $maxlistitemnum);
 
             if (count($listitems)) {
                 $html_str = '<ul style="list-style: none; margin-left: -15px">';
@@ -34,8 +34,7 @@ class block_customlist extends block_base {
                 foreach ($listitems as $listitem) {
                     $html_str .= '<li>';
 
-                    if ($this->check_capability('block/customlist:edit'))
-                    {
+                    if ($this->check_capability('block/customlist:edit')) {
                         $delurlparams = array(
                             'id' => $listitem->id,
                             'action' => 'delete',
@@ -62,9 +61,9 @@ class block_customlist extends block_base {
                     $listitemurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemurlparams);
                     $iconurl = new moodle_url('/blocks/customlist/list-icon.svg');
                     $html_str .= html_writer::link($listitemurl,
-                        ((!$this->check_capability('block/customlist:edit'))?
-                             '<img width="10" src="'.$iconurl.'">' . $OUTPUT->spacer() : '')
-                          . $listitem->title
+                        ((!$this->check_capability('block/customlist:edit')) ?
+                            '<img width="10" src="' . $iconurl . '">' . $OUTPUT->spacer() : '')
+                        . $listitem->title
                     );
                     $html_str .= '</li>';
                 }
@@ -73,39 +72,39 @@ class block_customlist extends block_base {
 
                 $this->content->text = $html_str;
             }
-        }
 
-        if (count($listitems) || $this->check_capability('block/customlist:edit')) {
+            if (count($listitems) || $this->check_capability('block/customlist:edit')) {
 
-            $html_str = '<ul style="list-style: none; margin-left: -15px;">';
+                $html_str = '<ul style="list-style: none; margin-left: -15px;">';
 
-            if ($this->check_capability('block/customlist:edit')) {
-                $html_str .= '<li>';
+                if ($this->check_capability('block/customlist:edit')) {
+                    $html_str .= '<li>';
 
-                $addurlparams = array(
-                    'action' => 'add',
-                    'returnurl' => $this->page->url,
-                );
-                $addurl = new moodle_url('/blocks/customlist/edit_listitem_view.php', $addurlparams);
-                $html_str .= html_writer::link($addurl, get_string('add', 'block_customlist'));
+                    $addurlparams = array(
+                        'action' => 'add',
+                        'returnurl' => $this->page->url,
+                    );
+                    $addurl = new moodle_url('/blocks/customlist/edit_listitem_view.php', $addurlparams);
+                    $html_str .= html_writer::link($addurl, get_string('add', 'block_customlist'));
 
-                $html_str .= '</li>';
+                    $html_str .= '</li>';
+                }
+
+                if (count($listitems)) {
+                    $html_str .= '<li>';
+                    $listitemsurlparams = array(
+                        'mode' => 'full',
+                        'returnurl' => $this->page->url,
+                    );
+                    $listitemsurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemsurlparams);
+                    $html_str .= html_writer::link($listitemsurl, get_string('listitemsview', 'block_customlist'));
+                    $html_str .= '</li>';
+                }
+
+                $html_str .= '</ul>';
+
+                $this->content->footer = $html_str;
             }
-
-            if (count($listitems)) {
-                $html_str .= '<li>';
-                $listitemsurlparams = array(
-                    'mode' => 'full',
-                    'returnurl' => $this->page->url,
-                );
-                $listitemsurl = new moodle_url('/blocks/customlist/listitem_view.php', $listitemsurlparams);
-                $html_str .= html_writer::link($listitemsurl, get_string('listitemsview', 'block_customlist'));
-                $html_str .= '</li>';
-            }
-
-            $html_str .= '</ul>';
-
-            $this->content->footer = $html_str;
         }
 
         return $this->content;
