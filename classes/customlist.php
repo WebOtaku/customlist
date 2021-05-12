@@ -130,7 +130,7 @@ class customlist
             $html_str .= '
             <div class="cm-accordion-item">
                 <h2 class="cm-accordion-header" id="heading' . $listitem->id . '">
-                    <button class="cm-accordion-button collapsed" type="button" data-toggle="collapse" 
+                    <button class="cm-accordion-button collapsed" type="button" data-toggle="collapse"
                             data-target="#collapse' . $listitem->id . '" aria-expanded="true" aria-controls="collapse' . $listitem->id . '">';
 
             if (has_capability('block/customlist:edit', $context)) {
